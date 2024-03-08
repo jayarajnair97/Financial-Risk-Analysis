@@ -44,3 +44,6 @@ The better acuracy score by DecisiontreeClassifier
     accuracy                           0.90    286031
    macro avg       0.52      0.51      0.50    286031
 weighted avg       0.85      0.90      0.87    286031
+
+# Power Point Presentation link
+https://docs.google.com/presentation/d/1xliygkI-Z8-aEULsfIbaejwP_KgPXOHe/edit?usp=drive_link&ouid=110042194959097886731&rtpof=true&sd=true

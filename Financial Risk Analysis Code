@@ -1,0 +1,178 @@
+# importing Libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.preprocessing import StandardScaler
+
+# Load data
+application_data = pd.read_csv('application_data.csv')
+previous_application = pd.read_csv('previous_application.csv')
+
+# Merge datasets
+df = pd.merge(application_data, previous_application, on='SK_ID_CURR', how='left')
+
+# Handle missing values
+# Fill missing values for numeric columns with the mean
+numeric_columns = df.select_dtypes(include=[np.number]).columns
+df[numeric_columns] = df[numeric_columns].fillna(df[numeric_columns].mean())
+
+# Fill missing values for non-numeric columns with the mode (most frequent value)
+non_numeric_columns = df.select_dtypes(exclude=[np.number]).columns
+df[non_numeric_columns] = df[non_numeric_columns].fillna(df[non_numeric_columns].mode().iloc[0])
+
+# After handling missing values, you might want to recheck for any remaining missing values
+print("Remaining missing values after handling:")
+print(df.isnull().sum())
+
+previous_application.columns
+
+# Check the data type of the 'TARGET' column
+print(df['TARGET'].dtype)
+
+# If the data type is 'object', try converting it to a numeric type
+if df['TARGET'].dtype == 'object':
+    df['TARGET'] = pd.to_numeric(df['TARGET'], errors='coerce')
+
+# Now try calculating the mean
+default_rates = df.groupby('AMT_INCOME_TOTAL')['TARGET'].mean()
+
+# Assuming you are working with the correct DataFrame
+# Make sure to replace 'df' with the actual name of your DataFrame
+
+# Calculate Income to Debt ratio
+# Assuming 'AMT_ANNUITY' and 'AMT_INCOME_TOTAL' columns exist in the dataframe
+df['income_to_debt_ratio'] = df['RATE_DOWN_PAYMENT'] / df['AMT_INCOME_TOTAL']
+
+# EDA - Financial Analysis
+# Relationship between income, debt levels, and loan default probability
+plt.figure(figsize=(10, 6))
+sns.scatterplot(data=df, x='AMT_INCOME_TOTAL', y='TARGET')
+plt.title('Relationship between Income, Credit Amount, and Loan Default Probability')
+plt.xlabel('Income')
+plt.ylabel('Credit Amount')
+plt.show()
+
+plt.figure(figsize=(10, 5))
+sns.countplot(data=df, x='NAME_FAMILY_STATUS')
+plt.title('Client Family Status Distribution')
+plt.show()
+
+plt.figure(figsize=(10, 5))
+sns.countplot(data=application_data, x='NAME_CONTRACT_TYPE')
+plt.title('Loan Type Distribution')
+plt.show()
+
+# Get the value counts of the top 10 loan purposes
+top_10_loan_purposes = df['NAME_CASH_LOAN_PURPOSE'].value_counts().head(10)
+
+# Plot the loan purpose distribution for the top 10 loan purposes
+plt.figure(figsize=(10, 5))
+sns.barplot(x=top_10_loan_purposes.index, y=top_10_loan_purposes.values)
+plt.title('Top 10 Loan Purposes Distribution')
+plt.xlabel('Loan Purpose')
+plt.ylabel('Count')
+plt.xticks(rotation=45)
+plt.show()
+
+
+plt.figure(figsize=(10, 5))
+sns.countplot(data=df, x='NAME_EDUCATION_TYPE')
+plt.title('Client Education Distribution')
+plt.show()
+
+plt.figure(figsize=(10, 5))
+sns.countplot(data=df, x='NAME_INCOME_TYPE')
+plt.title('Client Employment Status Distribution')
+plt.show()
+
+# Feature selection
+features = ['NAME_EDUCATION_TYPE', 'NAME_INCOME_TYPE', 'AMT_DOWN_PAYMENT', 'AMT_APPLICATION', 'NAME_PAYMENT_TYPE']
+X = df[features]
+y = df['TARGET']
+
+
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+
+# Load the data
+application_data = pd.read_csv('application_data.csv')
+previous_application = pd.read_csv('previous_application.csv')
+
+# Merge datasets
+df = pd.merge(application_data, previous_application, on='SK_ID_CURR', how='left')
+
+# Identify categorical columns
+categorical_columns = df.select_dtypes(include=['object']).columns
+
+# Initialize LabelEncoder
+label_encoders = {}
+
+# Encode categorical columns
+for col in categorical_columns:
+    label_encoders[col] = LabelEncoder()
+    df[col] = label_encoders[col].fit_transform(df[col])
+
+# Now, all categorical values are converted to numeric using LabelEncoder
+
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
+
+# Assuming 'X' is your feature matrix and 'y' is your target variable
+# You may need to replace this with your actual data
+
+# Define your feature matrix 'X' and target variable 'y'
+# Feature selection
+features = ['NAME_EDUCATION_TYPE', 'NAME_INCOME_TYPE', 'AMT_DOWN_PAYMENT', 'AMT_APPLICATION', 'NAME_PAYMENT_TYPE']
+X = df[features]
+y = df['TARGET']
+
+
+# Import the train_test_split function
+from sklearn.model_selection import train_test_split
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.impute import SimpleImputer
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import confusion_matrix, classification_report
+
+# Assuming 'X' and 'y' are your feature matrix and target variable
+# You may need to replace this with your actual data
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Initialize SimpleImputer
+imputer = SimpleImputer(strategy='mean')
+
+# Fit and transform the training data
+X_train_imputed = imputer.fit_transform(X_train)
+
+# Transform the test data
+X_test_imputed = imputer.transform(X_test)
+
+# Initialize Decision Tree Classifier
+decision_tree_model = DecisionTreeClassifier(random_state=42)
+
+# Fit the model
+decision_tree_model.fit(X_train_imputed, y_train)
+
+# Model evaluation
+y_pred_dt = decision_tree_model.predict(X_test_imputed)
+
+print(confusion_matrix(y_test, y_pred_dt))
+print(classification_report(y_test, y_pred_dt))
+
+
